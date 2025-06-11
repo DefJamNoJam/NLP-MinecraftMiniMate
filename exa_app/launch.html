@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Mini Mate - Launch</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="src/navigation.js"></script>
+</head>
+<body class="launch-page">
+  <div class="app-container">
+    <!-- ── 헤더바 ── -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:8px;-webkit-app-region:drag">
+        <img src="assets/mmm.PNG" alt="Logo" class="header-logo">
+        <span class="title-label">Minecraft Mini Mate</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button settings" id="settings-button">⚙️</button>
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+  
+  <div class="container">
+    <div class="app-logo">Minecraft Mini Mate</div>
+    <div class="app-subtitle">Your personal Minecraft assistant</div>
+    <button id="login-btn" class="start-button">
+      <img src="assets/start.png" alt="START" class="start-button-img">
+    </button>
+  </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const settingsButton = document.getElementById('settings-button');
+      const loginBtn = document.getElementById('login-btn');
+      const storage = window.storageAPI || { getItem: (key) => localStorage.getItem(key) || 'dark' };
+
+      async function checkAuth() {
+        try {
+          console.log('Checking authentication status...');
+          const isAuthenticated = await window.electronAPI.checkAuth();
+          console.log('Auth check result in launch.html:', isAuthenticated);
+          if (!isAuthenticated) {
+            console.log('User not authenticated, navigating to login.html');
+            await window.electronAPI.navigateTo('login.html');
+          } else {
+            console.log('User authenticated, navigating to index.html');
+            await window.electronAPI.navigateTo('index.html');
+          }
+        } catch (error) {
+          console.error('Auth check error:', error);
+          console.log('Error occurred, navigating to login.html');
+          await window.electronAPI.navigateTo('login.html');
+        }
+      }
+
+      function applyTheme() {
+        const theme = storage.getItem('theme') || 'dark';
+        document.body.className = theme + '-mode';
+      }
+
+      settingsButton.addEventListener('click', async () => {
+        const result = await window.electronAPI.navigateTo('settings.html');
+        console.log('Navigation result to settings.html:', result);
+      });
+
+      loginBtn.addEventListener('click', async () => {
+        await checkAuth(); // "Log In" 버튼 클릭 시 인증 체크
+      });
+
+      applyTheme();
+    });
+  </script>
+</body>
+</html>

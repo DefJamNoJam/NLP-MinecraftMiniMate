@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Mode - Minecraft Mini Mate</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="src/navigation.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- ── 헤더바 ── -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:4px;-webkit-app-region:drag">
+        <button class="window-control-button" onclick="window.electronAPI.windowControl('back-to-index')">←</button>
+        <span class="title-label">Select Mode</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button settings" id="settings-button">⚙️</button>
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+  
+    <!-- Main content -->
+    <div class="main-content flex-column-center">
+      <div class="app-logo">SELECT MODE</div>
+      
+      <div class="mode-grid">
+        <div class="mode-card" id="chat-mode">
+          <div class="game-info">
+            <div class="game-title">💬 Chat Mode</div>
+            <div class="game-description">Type your questions</div>
+          </div>
+        </div>
+        
+        <div class="mode-card disabled" id="voice-mode" style="opacity: 0.7; cursor: not-allowed; position: relative;">
+          <div class="lock-overlay">
+            <span class="lock-icon">🔒</span>
+          </div>
+          <div class="coming-soon">Coming Soon</div>
+          <div class="game-info">
+            <div class="game-title">🎙️ Voice Mode</div>
+            <div class="game-description">Speak your questions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const settingsButton = document.getElementById('settings-button');
+      const chatMode = document.getElementById('chat-mode');
+      const voiceMode = document.getElementById('voice-mode');
+      const storage = window.storageAPI || { getItem: (key) => localStorage.getItem(key) || 'dark' };
+
+      function applyTheme() {
+        const theme = storage.getItem('theme') || 'dark';
+        document.body.className = theme + '-mode';
+      }
+
+      settingsButton.addEventListener('click', async () => {
+        const result = await window.electronAPI.navigateTo('settings.html');
+        console.log('Navigation result to settings.html:', result);
+      });
+
+      chatMode.addEventListener('click', async () => {
+        const result = await window.electronAPI.navigateTo('chat-mode.html');
+        console.log('Navigation result to chat-mode.html:', result);
+      });
+
+      voiceMode.addEventListener('click', () => {
+        // Add shake animation
+        voiceMode.classList.add('shake-animation');
+        
+        // Remove the animation class after it completes
+        setTimeout(() => {
+          voiceMode.classList.remove('shake-animation');
+        }, 500);
+        
+        console.log('Voice mode is coming soon!');
+      });
+
+      applyTheme();
+      
+      // 뒤로가기 버튼 이벤트 처리
+      const backButton = document.getElementById('global-back');
+      if (backButton) {
+        backButton.addEventListener('click', function() {
+          console.log('Back button clicked in mode-select.html');
+          window.electronAPI.navigateTo('index.html');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Core API and Web Server
+fastapi>=0.104.1
+uvicorn>=0.23.2
+python-multipart>=0.0.6
+
+# Machine Learning and NLP
+torch>=2.0.0
+transformers>=4.34.1
+sentence-transformers>=2.2.0
+faiss-cpu>=1.7.4; sys_platform != 'win32'
+faiss-gpu>=1.7.4; sys_platform == 'win32' and platform_machine == 'AMD64'
+
+# LangChain
+langchain>=0.0.325
+langchain-community>=0.0.9
+
+# Data Processing and Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+pydantic>=2.4.2
+psutil>=5.9.0
+
+# Translation
+deep-translator>=1.11.4
+
+# Development Tools
+python-dotenv>=1.0.0

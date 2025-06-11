@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Selection - Minecraft RAG Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/supabaseClient.js"></script>
+  <script defer src="src/navigation.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- ── 헤더바 ── -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:4px;-webkit-app-region:drag">
+        <button class="window-control-button" onclick="window.electronAPI.windowControl('back-to-launch')">←</button>
+        <span class="title-label">Select Game</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button settings" id="settings-button">⚙️</button>
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content flex-column-center">
+      <div class="app-logo">SELECT GAME</div>
+      
+      <div class="game-grid">
+        <div class="game-card" id="minecraft-card">
+          <div class="game-image"></div>
+          <div class="game-info">
+            <div class="game-title"><strong>Minecraft</strong></div>
+            <div class="game-description">Ask questions about Minecraft</div>
+          </div>
+        </div>
+        
+        <div class="game-card disabled" id="hearthstone-card">
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="coming-soon">Coming Soon</div>
+          </div>
+          <div class="game-image hearthstone-image"></div>
+          <div class="game-info">
+            <div class="game-title"><strong>Hearthstone Battlegrounds</strong></div>
+            <div class="game-description">Ask questions about Hearthstone Battlegrounds</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock storage for demo purposes
+    window.storageAPI = {
+      getItem: (key) => {
+        const storage = {
+          'theme': 'dark',
+          'windowStyle': 'normal'
+        };
+        return storage[key];
+      }
+    };
+    
+    // Check authentication status on page load
+    async function checkAuth() {
+      try {
+        console.log('Checking authentication status...');
+        
+        // First, check if we have a session in the main process
+        const hasSession = await window.electronAPI.checkAuth();
+        console.log('Main process session check:', hasSession);
+        
+        if (!hasSession) {
+          console.log('No active session in main process, redirecting to login');
+          window.location.href = 'login.html';
+          return false;
+        }
+        
+        // If we have a session in the main process, try to get the Supabase session
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error('Error getting Supabase session:', error);
+            throw error;
+          }
+          
+          console.log('Supabase session check result:', { hasSession: !!session, user: session?.user });
+          
+          if (!session) {
+            console.log('No active Supabase session, but main process has session - refreshing page');
+            // If we have a session in main process but not in Supabase, refresh the page
+            window.location.reload();
+            return false;
+          }
+          
+          console.log('User is authenticated:', session.user.email);
+          return true;
+          
+        } catch (error) {
+          console.error('Error getting Supabase session:', error);
+          // If we can't get the Supabase session but have a main process session, continue
+          return true;
+        }
+        
+      } catch (error) {
+        console.error('Error in checkAuth:', error);
+        // On error, redirect to login
+        window.location.href = 'login.html';
+        return false;
+      }
+    }
+    
+    // Apply theme
+    function applyTheme() {
+      const theme = window.storageAPI?.getItem('theme') || 'dark';
+      document.body.className = theme + '-mode';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      applyTheme();
+      
+      // Check authentication before proceeding
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        return; // Stop execution if not authenticated
+      }
+      
+      // Continue with the rest of the app initialization
+      console.log('Initializing app...');
+      const settingsButton = document.getElementById('settings-button');
+      const minecraftCard = document.getElementById('minecraft-card');
+      const hearthstoneCard = document.getElementById('hearthstone-card');
+      const storage = window.storageAPI || {
+        getItem: (key) => localStorage.getItem(key) || 'dark',
+      };
+
+      settingsButton.addEventListener('click', async () => {
+        console.log('Settings button clicked, navigating to settings.html');
+        const result = await window.electronAPI.navigateTo('settings.html');
+        console.log('Navigation result to settings.html:', result);
+      });
+
+      minecraftCard.addEventListener('click', async () => {
+        console.log('Minecraft card clicked, navigating to mode-select.html');
+        const result = await window.electronAPI.navigateTo('mode-select.html');
+        console.log('Navigation result to mode-select.html:', result);
+      });
+
+      hearthstoneCard.addEventListener('click', () => {
+        console.log('Hearthstone Battlegrounds card clicked, but it is disabled');
+        // 비활성화된 카드임을 알리는 애니메이션 효과 추가
+        hearthstoneCard.classList.add('shake-animation');
+        setTimeout(() => {
+          hearthstoneCard.classList.remove('shake-animation');
+        }, 500);
+      });
+
+      checkAuth();
+      applyTheme();
+      
+      // 뒤로가기 버튼 이벤트 처리
+      const backButton = document.getElementById('global-back');
+      if (backButton) {
+        backButton.addEventListener('click', function() {
+          console.log('Back button clicked in index.html');
+          window.electronAPI.navigateTo('launch.html');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

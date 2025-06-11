@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Mode</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="src/navigation.js"></script>
+
+  <!-- 앱 헤더 & 토스트용 보완 스타일 -->
+  <style>
+    .title-bar      { justify-content: space-between; }
+    .title-label    { font-size:14px;font-weight:600;margin-left:6px;
+                      color:var(--text-color);pointer-events:none;
+                      -webkit-app-region:drag; }
+
+    /* 토스트 효과 (2.8초후 사라짐) */
+    .error-message{
+      position:absolute; left:50%; bottom:90px;
+      transform:translateX(-50%);
+      max-width:80%; padding:12px 18px;
+      background:rgba(220,53,69,.95); color:#fff;
+      border-radius:10px; font-size:15px;
+      opacity:0; pointer-events:none;
+      transition:opacity .25s;
+    }
+    .error-message.visible{opacity:1; animation:toastHide 2.8s forwards;}
+    @keyframes toastHide{0%,80%{opacity:1;}100%{opacity:0;}}
+  </style>
+</head>
+
+<body>
+  <script>
+    // 테마 적용 함수
+    function applyTheme() {
+      const theme = window.storageAPI?.getItem('theme') || 'dark';
+      document.body.className = theme + '-mode';
+    }
+    
+    // DOM 로드 시 테마 적용
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      
+      // 테마 변경 감지
+      if (window.electronAPI) {
+        window.electronAPI.onThemeChange((event, theme) => {
+          document.body.className = theme + '-mode';
+        });
+      }
+    });
+  </script>
+  <div class="app-container">
+    <!-- 앱 헤더바 -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:4px;-webkit-app-region:drag">
+        <button class="window-control-button" onclick="window.electronAPI.navigateTo('mode-select.html')">←</button>
+        <span class="title-label">Chat Mode</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button settings" id="settings-button">⚙️</button>
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+
+    <!-- 앱 본문 -->
+    <div class="chat-container">
+      <!-- 메시지 -->
+      <div id="chat-messages" class="chat-messages">
+        <!-- 초기 메시지는 자바스크립트로 실시간 타이핑 효과 추가 -->
+      </div>
+
+      <!-- 입력창 -->
+      <form id="chat-form" class="chat-input-bar" autocomplete="off">
+        <textarea id="chat-input" class="chat-input"
+                  placeholder="메시지를 입력하세요..." rows="1"></textarea>
+        <button id="send-button" class="send-button" type="submit">→</button>
+      </form>
+
+      <!-- 오류 토스트 -->
+      <div class="error-message" id="error-message"></div>
+    </div>
+  </div>
+
+  <!-- 앱 스크립트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const form     = document.getElementById('chat-form');
+      const textarea = document.getElementById('chat-input');
+      const msgs     = document.getElementById('chat-messages');
+      const errBox   = document.getElementById('error-message');
+      
+      // 초기 메시지 실시간 타이핑 효과 - 즉시 표시
+      setTimeout(() => {
+        const welcomeText = '무엇을 도와드릴까요? 질문을 입력해주세요!';
+        const welcomeMsg = document.createElement('div');
+        welcomeMsg.className = 'message assistant-message';
+        const welcomeBubble = document.createElement('div');
+        welcomeBubble.className = 'message-content typing';
+        welcomeMsg.appendChild(welcomeBubble);
+        msgs.appendChild(welcomeMsg);
+        
+        // 타이핑 효과
+        typeText(welcomeBubble, welcomeText, 30);
+      }, 100); // 지체 시간 축소
+      
+      // SLM 서버 시작 - 백그라운드에서 시작
+      try {
+        const isRunning = await window.electronAPI.slmStatus();
+        if (!isRunning) {
+          console.log('Starting SLM server...');
+          window.electronAPI.slmStart().then(started => {
+            if (started) {
+              console.log('SLM server started successfully');
+            } else {
+              console.error('Failed to start SLM server');
+            }
+          });
+        } else {
+          console.log('SLM server is already running');
+        }
+      } catch (error) {
+        console.error('Error checking/starting SLM server:', error);
+      }
+
+      /* 자동 높이 */
+      textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      });
+
+      /* Enter 시 전송,  Shift+Enter 시 줄바꿈*/
+      textarea.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      /* 텍스트 타이핑 효과 함수 */
+      function typeText(element, text, speed = 30) {
+        let i = 0;
+        element.textContent = '';
+
+        function typing() {
+          if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+          } else {
+            element.classList.remove('typing');
+          }
+          msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        typing();
+      }
+
+      /* 말풍선 추가 */
+      const addMsg = (text, who='assistant') => {
+        const wrap = document.createElement('div');
+        wrap.className = `message ${who}-message`;
+        const bubble = document.createElement('div');
+        bubble.className = 'message-content';
+
+        // 사용자 메시지는 바로 표시, SLM 메시지는 타이핑 효과
+        if (who === 'user') {
+          bubble.textContent = text;
+          wrap.appendChild(bubble);
+          msgs.appendChild(wrap);
+          msgs.scrollTop = msgs.scrollHeight;
+        } else {
+          // SLM 메시지는 타이핑 효과 적용
+          bubble.classList.add('typing');
+          wrap.appendChild(bubble);
+          msgs.appendChild(wrap);
+          typeText(bubble, text, 20); // 조금 빠르게 타이핑
+        }
+      };
+
+      /* 전송 */
+      async function send(q, retryCount = 0) {
+        const MAX_RETRIES = 2; // 최대 재시도 횟수
+        
+        // 처음 시도일 때만 사용자 메시지 추가
+        if (retryCount === 0) {
+          addMsg(q, 'user');
+          textarea.value = '';
+        }
+
+        // 로딩 표시를 위한 임시 메시지 추가
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'message assistant-message loading-message';
+        const loadingBubble = document.createElement('div');
+        loadingBubble.className = 'message-content typing';
+        loadingBubble.textContent = retryCount > 0 ? '재연결 중...' : '답변 작성 중...';
+        loadingMsg.appendChild(loadingBubble);
+        msgs.appendChild(loadingMsg);
+
+        try {
+          // SLM 서버 상태 확인 및 필요시 시작
+          const isRunning = await window.electronAPI.slmStatus();
+          if (!isRunning) {
+            console.log('SLM server not running, starting now...');
+            const startResult = await window.electronAPI.slmStart();
+            if (!startResult) {
+              throw new Error('Failed to start SLM server');
+            }
+            console.log('SLM server started successfully');
+            // 서버 시작 후 잠시 대기 (서버 초기화 시간)
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+
+          // API 호출
+          const res = await fetch('http://localhost:8504/query', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ query: q })
+          });
+          const data = await res.json();
+
+          // 로딩 메시지만 제거
+          const loadingElements = document.querySelectorAll('.loading-message');
+          loadingElements.forEach(el => el.remove());
+
+          // 봇 메시지 추가
+          addMsg(data.answer || data.response || '응답을 처리할 수 없습니다.');
+        } catch (e) {
+          console.error(`Error in send function (attempt ${retryCount + 1}):`, e);
+          
+          // 로딩 메시지만 제거
+          const loadingElements = document.querySelectorAll('.loading-message');
+          loadingElements.forEach(el => el.remove());
+
+          // 재시도 로직
+          if (retryCount < MAX_RETRIES) {
+            console.log(`Retrying... Attempt ${retryCount + 2} of ${MAX_RETRIES + 1}`);
+            // 재시도 전 잠시 대기
+            setTimeout(() => send(q, retryCount + 1), 2000);
+            return;
+          }
+          
+          addMsg('서버 오류가 발생했어요! 잠시 후 다시 시도해주세요.');
+
+          /* 3초 토스트 */
+          errBox.textContent = '서버에 연결할 수 없습니다. 서버가 준비되는 데 시간이 걸릴 수 있습니다.';
+          errBox.classList.add('visible');
+          setTimeout(() => errBox.classList.remove('visible'), 3000);
+        }
+      }
+
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const q = textarea.value.trim();
+        if (q) send(q);
+      });
+      
+      // Settings button handler
+      const settingsButton = document.getElementById('settings-button');
+      if (settingsButton) {
+        settingsButton.addEventListener('click', async () => {
+          console.log('Navigating to settings from chat-mode.html');
+          await window.electronAPI.navigateTo('settings.html');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

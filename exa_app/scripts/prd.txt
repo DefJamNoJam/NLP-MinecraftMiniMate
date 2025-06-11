@@ -1,0 +1,115 @@
+Title: Supabase-Authenticated Minecraft RAG Desktop App (Electron-based)
+
+Overview:
+This is a desktop assistant application for Minecraft players. When the app starts, users must log in or sign up. After authentication, they can select a game and then choose between Chat Mode or Voice Mode to ask questions. The backend is a locally running Python RAG server which responds to queries via the `/query` API.
+
+The app is built with Electron, uses Supabase for authentication, and connects to a local FastAPI backend (converted from `exa_rag_temp.py`) for answering user questions.
+
+The UI design must be modern, clean, and visually polished. The layout should be minimal, component-based, and responsive within the fixed window size (600x400). Buttons, text inputs, and toggles should have consistent spacing, soft shadows, and smooth transitions to enhance user experience.
+
+---
+
+User Flow:
+
+1. App launches → Login screen is displayed first
+2. A "Sign up" section is shown below the login form
+3. After login or sign-up, user is redirected to the Game Selection screen (index.html)
+4. Selecting a game navigates to Mode Selection screen (mode-select.html)
+5. Choosing a mode loads Chat Mode (chat-mode.html) or Voice Mode (voice-mode.html)
+6. Chat or voice input is sent to the local RAG API at `/query` and the response is shown
+7. Settings screen allows changing light/dark theme and window transparency (normal/translucent)
+
+---
+
+Detailed Features:
+
+[1] Login Screen (login.html)
+- Email + password fields
+- Login button
+- Below it, a Sign Up form with email + password input
+- Auth is handled through Supabase Auth API
+- Successful login redirects to index.html
+- Failed login shows error message
+
+[2] Game Selection (index.html)
+- Title: “Select Game”
+- Currently shows only one game: “Minecraft”
+- Clicking Minecraft navigates to mode-select.html
+- Settings icon (⚙️) at the top-right → navigates to settings.html
+
+[3] Mode Selection (mode-select.html)
+- Title: “Select Mode”
+- Two buttons:
+  - Chat Mode → navigates to chat-mode.html
+  - Voice Mode → navigates to voice-mode.html
+- Back button (top-left) → returns to index.html
+
+[4] Chat Mode (chat-mode.html)
+- Back button at the top
+- Scrollable chat log area with modern card-style messages
+- Text input field + Send button
+- User input is sent to `http://localhost:8501/query` via POST
+- Response is appended to the chat log
+- Include typing/loading indicator while waiting for reply
+- Handle errors with visual feedback
+
+[5] Voice Mode (voice-mode.html)
+- Centered microphone button (STT not required yet)
+- Clicking the mic button shows placeholder recognized text
+- This text is sent to `/query` just like in chat mode
+
+[6] Settings (settings.html)
+- Theme toggle: Dark / Light (CSS variable-based)
+- Window style toggle: Normal / Translucent
+- Selections are saved in `localStorage`
+- `main.js` reads these settings when creating the window
+- Back button at the top-left
+
+---
+
+UI/UX Requirements:
+
+- Use soft shadows, rounded corners, and smooth transitions
+- Button hover/active states must be visually responsive
+- Layout must be clean and modern (avoid cluttered forms or mismatched spacing)
+- Use system fonts or neutral sans-serif (e.g., Inter, Segoe UI, Roboto)
+- Support both dark and light themes with consistent color contrast
+- Do not use external frameworks like React or Vue
+- Use componentized structure with utility CSS classes or BEM naming
+
+---
+
+Technical Requirements:
+
+- All UI is written in plain HTML, JS, and CSS
+- Supabase is used for auth only; managed via `.env` or `supabaseClient.js`
+- Electron `main.js` handles window switching via IPC (`ipcRenderer.send(...)`)
+- Python RAG server runs locally (converted from `exa_rag_temp.py`)
+  - `/query` endpoint receives user questions and returns answers
+  - Prebuilt vector DB (FAISS index + metadata) is used
+- Theme and transparency settings are managed with `localStorage`
+- App window: 600x400, always on top, with optional transparency
+
+---
+
+Files to Implement:
+
+- `main.js` (Electron entrypoint)
+- `login.html`
+- `index.html` (Game Selection)
+- `mode-select.html` (Mode Selection)
+- `chat-mode.html`
+- `voice-mode.html`
+- `settings.html`
+- `supabaseClient.js` (Supabase login/signup logic)
+- `localStorage.js` (theme/style persistence)
+- `styles.css` or embedded styles
+- `preload.js` (optional if needed)
+
+---
+
+Future Expansion:
+
+- Add real STT functionality (WebSpeech API or Whisper)
+- Store chat history per user in Supabase DB
+- Replace local LLM with cloud-based API (OpenAI, Together, EXAONE hosted)

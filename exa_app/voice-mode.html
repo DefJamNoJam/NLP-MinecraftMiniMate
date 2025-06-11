@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Mode - Minecraft Mini Mate</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="src/navigation.js"></script>
+  <style>
+    /* Voice Mode 전용 스타일 */
+    .chat-container.voice-mode {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-bottom: 160px; /* 마이크 버튼 영역 확보 */
+      position: relative;
+    }
+    
+    .chat-messages.voice-mode {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .voice-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, var(--bg-color) 80%, transparent);
+      padding-bottom: 20px;
+    }
+    
+    .mic-button {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mic-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+    }
+    
+    .mic-button:active {
+      transform: scale(0.95);
+    }
+    
+    .mic-button::before {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.3s ease;
+    }
+    
+    .mic-button::after {
+      content: '';
+      position: absolute;
+      width: 5px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.8);
+      top: 62%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .mic-button.recording {
+      background-color: #dc3545;
+    }
+    
+    .mic-button.recording::before {
+      animation: recordingPulse 1.5s infinite;
+    }
+    
+    .mic-button.recording::after {
+      height: 18px;
+      top: 63%;
+      animation: recordingWave 1.5s infinite;
+    }
+    
+    @keyframes recordingPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      }
+    }
+    
+    @keyframes recordingWave {
+      0%, 100% {
+        height: 18px;
+      }
+      50% {
+        height: 10px;
+      }
+    }
+    
+    /* 사운드 웨이브 애니메이션 */
+    .sound-waves {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .mic-button.recording .sound-waves {
+      opacity: 1;
+    }
+    
+    .sound-wave {
+      position: absolute;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      animation: wave 2s infinite;
+    }
+    
+    .sound-wave:nth-child(1) {
+      animation-delay: 0s;
+    }
+    
+    .sound-wave:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    
+    .sound-wave:nth-child(3) {
+      animation-delay: 1s;
+    }
+    
+    @keyframes wave {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+    }
+    
+    .listening-text {
+      font-size: 14px;
+      color: var(--text-color);
+      margin-top: 12px;
+      text-align: center;
+      min-height: 40px;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .placeholder-text {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    // 테마 적용 함수
+    function applyTheme() {
+      const theme = window.storageAPI?.getItem('theme') || 'dark';
+      document.body.className = theme + '-mode';
+    }
+    
+    // DOM 로드 시 테마 적용
+    document.addEventListener('DOMContentLoaded', () => {
+      applyTheme();
+      
+      // 테마 변경 감지
+      if (window.electronAPI) {
+        window.electronAPI.onThemeChange((event, theme) => {
+          document.body.className = theme + '-mode';
+        });
+      }
+    });
+  </script>
+  <div class="app-container">
+    <!-- ── 헤더바 ── -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:4px;-webkit-app-region:drag">
+        <button class="window-control-button" onclick="window.electronAPI.navigateTo('mode-select.html')">←</button>
+        <span class="title-label">Voice Mode</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button settings" id="settings-button">⚙️</button>
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+
+    <!-- 채팅 컨테이너 (ChatGPT 스타일) -->
+    <div class="chat-container voice-mode">
+      <div class="chat-messages voice-mode" id="chat-messages">
+        <div class="placeholder-text" id="placeholder-text">
+          마이크를 클릭하여 음성 질문을 시작하세요
+        </div>
+        <!-- 메시지들이 여기에 동적으로 추가됩니다 -->
+      </div>
+      
+      <!-- 음성 컨트롤 영역 -->
+      <div class="voice-controls">
+        <div class="mic-button" id="mic-button">
+          <div class="sound-waves">
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+          </div>
+        </div>
+        <div class="listening-text" id="listening-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const micButton = document.getElementById('mic-button');
+      const chatMessages = document.getElementById('chat-messages');
+      const listeningText = document.getElementById('listening-text');
+      const placeholderText = document.getElementById('placeholder-text');
+      
+      let isRecording = false;
+      let mockRecognizedText = '';
+      
+      // 음성 인식 시작/중지 토글
+      micButton.addEventListener('click', () => {
+        isRecording = !isRecording;
+        
+        if (isRecording) {
+          startRecording();
+        } else {
+          stopRecording();
+        }
+      });
+      
+      // 음성 인식 시작 (목업)
+      function startRecording() {
+        micButton.classList.add('recording');
+        listeningText.textContent = '듣고 있습니다...';
+        placeholderText.style.display = 'none';
+        
+        // 간단한 음성 인식 시뮬레이션
+        mockRecognizedText = '';
+        listeningText.textContent = '음성을 인식하는 중...';
+        
+        // 실제 구현 시 여기에 음성 인식 API 호출 코드가 들어갈 것임
+        
+        // 3초 후 자동으로 녹음 중지 (데모용)
+        setTimeout(() => {
+          if (isRecording) {
+            stopRecording();
+          }
+        }, 5000);
+      }
+      
+      // 음성 인식 중지 및 메시지 추가
+      function stopRecording() {
+        isRecording = false;
+        micButton.classList.remove('recording');
+        listeningText.textContent = '';
+        
+        if (mockRecognizedText) {
+          addMessage('user', mockRecognizedText);
+          // 응답 메시지는 실제 구현 시 추가
+        }
+      }
+      
+      // 메시지 추가 함수
+      function addMessage(type, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.innerHTML = text;
+        
+        messageDiv.appendChild(contentDiv);
+        chatMessages.appendChild(messageDiv);
+        
+        // 스크롤을 최하단으로
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+      
+      // Settings button handler
+      const settingsButton = document.getElementById('settings-button');
+      if (settingsButton) {
+        settingsButton.addEventListener('click', async () => {
+          console.log('Navigating to settings from voice-mode.html');
+          await window.electronAPI.navigateTo('settings.html');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

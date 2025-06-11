@@ -1,0 +1,1330 @@
+/* Minecraft Mini Mate - Shared Styles */
+
+:root {
+  /* Light theme variables */
+  --bg-color-light: #f5f5f5;
+  --text-color-light: #333333;
+  --primary-color-light: #28a745;
+  --secondary-color-light: #218838;
+  --accent-color-light: #8bc34a;
+  --error-color-light: #dc3545;
+  --card-bg-light: #ffffff;
+  --input-bg-light: #ffffff;
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+  /* Dark theme variables */
+  --bg-color-dark: #1a1a1a;
+  --text-color-dark: #e0e0e0;
+  --primary-color-dark: #28a745;
+  --secondary-color-dark: #218838;
+  --accent-color-dark: #a5d6a7;
+  --error-color-dark: #dc3545;
+  --card-bg-dark: #242424;
+  --input-bg-dark: #2c2c2c;
+  --shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.3);
+  
+  /* Default to dark theme */
+  --bg-color: var(--bg-color-dark);
+  --card-bg: var(--card-bg-dark);
+  --text-color: var(--text-color-dark);
+  --text-secondary: #a0a0a0;
+  --primary-color: var(--primary-color-dark);
+  --primary-hover: var(--secondary-color-dark);
+  --secondary-color: #6c757d;
+  --secondary-hover: #5a6268;
+  --error-color: var(--error-color-dark);
+  --shadow: var(--shadow-dark);
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  
+  /* Responsive sizing */
+  --card-width-sm: 90%;
+  --card-width-md: 400px;
+  --card-width-lg: 480px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  
+  /* Borders */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+/* Theme classes */
+body.light-mode {
+  --bg-color: var(--bg-color-light);
+  --card-bg: var(--card-bg-light);
+  --text-color: var(--text-color-light);
+  --primary-color: var(--primary-color-light);
+  --primary-hover: var(--secondary-color-light);
+  --shadow: var(--shadow-light);
+}
+
+body.dark-mode {
+  --bg-color: var(--bg-color-dark);
+  --card-bg: var(--card-bg-dark);
+  --text-color: var(--text-color-dark);
+  --primary-color: var(--primary-color-dark);
+  --primary-hover: var(--secondary-color-dark);
+  --shadow: var(--shadow-dark);
+}
+
+/* Flex centering utilities */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 제목 스타일 */
+.app-logo {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 30px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+}
+
+/* Title bar */
+.title-bar {
+  height: 36px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 8px;
+  background-color: rgba(26, 26, 26, 0.5);
+  backdrop-filter: blur(15px);
+  -webkit-app-region: drag;
+  z-index: 1000;
+  padding-top: env(safe-area-inset-top, 4px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* 헤더 로고 스타일 */
+.header-logo {
+  width: auto;
+  height: 24px;
+  margin-left: 4px;
+  filter: drop-shadow(0 0 5px rgba(40, 167, 69, 0.3));
+}
+
+/* Window controls container */
+.window-controls {
+  display: flex;
+  align-items: center;
+  -webkit-app-region: no-drag;
+}
+
+/* Custom window controls */
+.window-control-button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.window-control-button:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.window-control-button.settings {
+  color: var(--primary-color);
+}
+
+.window-control-button.close:hover {
+  background-color: var(--error-color);
+  opacity: 1;
+}
+
+/* Main content area */
+
+/* select game 화면에서만 타이틀 아래 여백 조절 */
+.main-content .app-logo {
+  margin-bottom: 14px;
+}
+
+/* login 화면에서만 타이틀 아래 여백 조절 */
+body.login-page .main-content .app-logo {
+  margin-bottom: 36px;
+}
+
+/* mode select 화면에서 아이콘과 텍스트 스타일 조정 */
+#chat-mode .game-title,
+#voice-mode .game-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#chat-mode .game-info,
+#voice-mode .game-info {
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: var(--space-md);
+  background-color: var(--bg-color);
+  overflow-y: auto;
+  -webkit-app-region: no-drag;
+  padding-top: 15px;
+  margin-top: 0;
+  width: 100%;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #151515;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #3ac255;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Card component */
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: var(--space-lg);
+  width: var(--card-width-sm);
+  max-width: var(--card-width-md);
+  margin: var(--space-md) auto;
+}
+
+/* Modal cards */
+.login-card,
+.settings-card,
+.game-select-card,
+.mode-select-card {
+  margin: var(--space-lg) auto;
+  margin-top: var(--space-xl);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  -webkit-app-region: no-drag;
+  max-width: var(--card-width-md);
+  width: var(--card-width-sm);
+}
+
+/* Container and game grid for index.html */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* 컨텐츠를 상단부터 배치 */
+  padding: 20px;
+  padding-top: 90px; /* 타이틀 영역을 위한 여백 확보 */
+  overflow-y: auto; /* 세로 스크롤 기능 유지 */
+  max-height: calc(100vh - 60px); /* 타이틀 바 높이를 고려한 최대 높이 설정 */
+}
+
+/* 페이지 제목 스타일 */
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #2DBE2D;
+  margin: 20px 20px 20px 20px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+  letter-spacing: -0.5px;
+  padding: 15px 0;
+  width: calc(100% - 40px);
+  background-color: #242424;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-top: 4px solid #2DBE2D;
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  z-index: 100;
+  display: block;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 하나의 칼럼으로 유지하여 세로로 배치 */
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px; /* 그리드 상단 여백 축소 */
+}
+
+/* Select Mode 페이지에서만 카드 가로 배치 */
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 두 개의 칼럼으로 가로로 배치 */
+  gap: 20px;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 10px;
+}
+
+.mode-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 200px; /* 세로 높이 늘림 */
+}
+
+.mode-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.game-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.game-image {
+  width: 100%;
+  height: 120px;
+  background-color: #333;
+  background-image: url('./assets/my-minecraft-image.jpg'); /* 다운로드한 이미지로 경로 변경 */
+  background-size: cover; /* 이미지가 컨테이너를 가로로 꼭 차게 하기 위해 cover로 변경 */
+  background-position: center 20%; /* center와 top 사이로 조절 (0%가 상단, 50%가 중앙) */
+  background-repeat: no-repeat; /* 이미지 반복 없음 */
+}
+
+/* Hearthstone Battlegrounds 이미지 스타일 */
+.hearthstone-image {
+  background-image: url('./assets/hearthstone-battlegrounds.jpg'); /* 하스스톤 전장 이미지 */
+  background-position: center; /* Minecraft와 동일한 위치에 이미지 배치 */
+  position: relative;
+}
+
+/* 비활성화된 게임 카드 스타일 */
+.game-card.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  position: relative;
+}
+
+/* 자물쇠 아이콘 스타일 */
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  border-radius: 8px;
+}
+
+.lock-icon {
+  font-size: 40px;
+  color: white;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 비활성화된 카드 텍스트 스타일 */
+.coming-soon {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+  z-index: 6;
+}
+
+/* 흔들림 애니메이션 효과 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-animation {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.game-info {
+  padding: 16px;
+  text-align: center;
+}
+
+.game-title {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+}
+
+.game-description {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Settings components */
+.settings-section {
+  margin-bottom: var(--space-md);
+  width: 100%;
+}
+
+.settings-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--space-md);
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  margin-bottom: var(--space-sm);
+}
+
+.settings-label {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  -webkit-app-region: no-drag;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555;
+  transition: .3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--primary-color);
+}
+
+input:focus + .toggle-slider {
+  box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+/* Logout button */
+.logout-button {
+  width: 100%;
+  margin-top: var(--space-sm);
+  background-color: var(--error-color) !important;
+  color: white !important;
+}
+
+.logout-button:hover {
+  background-color: #c82333 !important;
+}
+
+/* Settings 페이지 타이틀 스타일 */
+.main-content h2 {
+  margin: 3px 0 3px 0;
+}
+
+/* Typography */
+.app-logo, h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  color: var(--primary-color);
+  text-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+  animation: fadeInDown 0.8s ease-out;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+p {
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+/* Form components */
+.form-group {
+  margin-bottom: var(--space-md);
+  width: 100%;
+  max-width: 320px;
+  animation: fadeInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.form-group:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* Login form specific */
+#login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+#login-form .form-group {
+  margin-bottom: var(--space-md);
+  width: 100%;
+}
+
+label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-color);
+  font-size: 16px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Button components */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease-out;
+  animation-delay: 0.3s;
+  animation-fill-mode: both;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  min-height: 36px;
+  vertical-align: middle;
+  margin-top: var(--space-sm);
+  width: 100%;
+}
+
+/* 로그인 버튼 스타일 - 로그아웃 버튼과 동일하게 설정 */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(40, 167, 69, 0.25);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-shadow: none;
+  margin-top: var(--space-sm);
+  width: 100%;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 6px 20px 0 rgba(40, 167, 69, 0.35);
+  transform: translateY(-2px);
+}
+
+/* 로그아웃 버튼 스타일 - 원래 스타일 유지 */
+.btn-secondary.logout-button {
+  background-color: #dc3545;
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(220, 53, 69, 0.25);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-shadow: none;
+  margin-top: var(--space-sm);
+  width: 100%;
+}
+
+.btn-secondary.logout-button:hover {
+  background-color: #c82333;
+  box-shadow: 0 6px 20px 0 rgba(220, 53, 69, 0.35);
+  transform: translateY(-2px);
+}
+
+/* 기본 보조 버튼 스타일 */
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+.btn:active {
+  transform: scale(0.98) translateY(0);
+  box-shadow: 0 2px 10px 0 rgba(40, 167, 69, 0.2);
+}
+
+/* Error message */
+.error-message {
+  color: var(--error-color);
+  font-size: 14px;
+  margin-top: var(--space-xs);
+  display: none;
+}
+
+.error-message.visible {
+  display: block;
+}
+
+/* Launch screen specific */
+.app-logo {
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+  letter-spacing: -0.5px;
+  display: inline-block;
+  animation: bounce 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 로그인 페이지의 로그인 버튼 */
+.login-page #login-form .btn-primary {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+}
+
+/* 런치 페이지의 START 버튼 */
+.start-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 20px auto 0;
+  cursor: pointer;
+  outline: none;
+  display: block;
+  max-width: 320px;
+  width: 100%;
+}
+
+.start-button-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.start-button:hover .start-button-img {
+  transform: scale(1.05);
+}
+
+.start-button:active .start-button-img {
+  transform: scale(0.98);
+}
+
+/* 설정 페이지의 로그인 버튼 */
+#auth-button {
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+  text-shadow: none !important;
+}
+
+.app-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+/* Sign up section */
+.signup-section {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  width: 100%;
+  max-width: 320px;
+  animation: fadeIn 1s ease-out;
+  animation-delay: 0.5s;
+  animation-fill-mode: both;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 라이트 모드에서 회원가입 섹션 스타일 */
+body.light-mode .signup-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.signup-section:hover {
+  opacity: 1;
+}
+
+.signup-section h3 {
+  text-align: center;
+  margin-bottom: var(--space-sm);
+  font-size: 14px;
+}
+
+.signup-section .form-group {
+  margin-bottom: var(--space-xs);
+}
+
+.signup-section .btn {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+
+.signup-section input {
+  padding: 8px 10px;
+  font-size: 14px;
+  height: 32px;
+}
+
+.signup-section .btn {
+  padding: 6px 10px;
+  font-size: 14px;
+  height: 32px;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #888;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #444;
+  margin: 0 10px;
+}
+
+body.light-mode .divider {
+  color: #666;
+}
+
+body.light-mode .divider::before,
+body.light-mode .divider::after {
+  background: #ddd;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.8;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 599px) {
+  :root {
+    --card-width-sm: 95%;
+  }
+  
+  .card,
+  .login-card,
+  .settings-card,
+  .game-select-card,
+  .mode-select-card {
+    padding: var(--space-md);
+  }
+  
+  .main-content {
+    padding: var(--space-sm);
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  :root {
+    --card-width-sm: 90%;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --card-width-sm: 80%;
+  }
+  
+  .card,
+  .login-card,
+  .settings-card,
+  .game-select-card,
+  .mode-select-card {
+    max-width: var(--card-width-lg);
+  }
+}
+
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+  font-weight: 700;
+
+  padding: 0 var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* 기존 스타일 유지 */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - var(--title-bar-height));
+  padding: var(--space-md);
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 600px;
+  margin-top: var(--space-lg);
+}
+
+.mode-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: var(--space-md);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.mode-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.mode-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
+}
+
+.mode-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mode-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* ───────────────────── 공통 페이지 전환 효과 추가 ───────────────────── */
+
+/* 페이지가 사라질 때 */
+@keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+.fade-out        { animation: fadeOut .3s forwards; }
+
+/* 페이지가 나타날 때 */
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.fade-transition { animation: fadeIn .3s forwards; }
+
+/* 뒤로가기 버튼, 기존 window-control-button 과 동일한 높이 */
+.window-control-button.back {
+  margin-right: auto;    /* 왼쪽 끝으로 */
+  display: flex;         /* 세로축 정렬 */
+  align-items: center;
+}
+
+/* 활성 / 비활성 상태 */
+.window-control-button.back.disabled {         /* 스택 길이 1일 때 */
+  opacity: .3;
+  pointer-events: none;
+}
+
+/* ───── Chat Mode 전용 레이아웃 ───── */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 40px);
+  width: 100vw;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px 16px 16px 16px;
+  flex: 1;
+  overflow-y: auto;
+  width: 100vw;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* 타이틀바 스타일 */
+.title-bar { 
+  justify-content: space-between; 
+}
+
+.title-label { 
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 6px;
+  color: var(--text-color);
+  pointer-events: none;
+  -webkit-app-region: drag; 
+}
+
+.message{
+  display:flex;
+  width:100%;
+}
+
+/* 사용자(오른쪽) */
+.user-message{
+  justify-content:flex-end;
+}
+.user-message .message-content{
+  background:#2DBE2D; /* 선명한 녹색으로 고정 */
+  color:#fff; /* 흰색 텍스트로 고정 */
+  border-bottom-right-radius:4px;
+}
+
+/* 봇(왼쪽) */
+.assistant-message{
+  justify-content:flex-start;
+}
+.assistant-message .message-content{
+  background:#f0f0f0; /* 라이트 모드: 밝은 회색 */
+  color:#333; /* 라이트 모드: 어두운 텍스트 */
+  border-bottom-left-radius:4px;
+}
+
+/* 다크 모드에서 봇 말풍선 */
+[data-theme="dark"] .assistant-message .message-content {
+  background:#3a3a3a; /* 다크 모드: 밝은 회색 */
+  color:#e0e0e0; /* 다크 모드: 밝은 텍스트 */
+}
+
+/* 말풍선 공통 */
+.message-content{
+  max-width:85%;
+  padding:12px 16px;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  line-height:1.48;
+  word-break:break-word;
+  white-space:pre-wrap;
+  animation:fadeIn .25s ease-out;
+  margin:0;
+}
+
+/* 타이핑 효과 */
+.message-content.typing::after {
+  content: '|';
+  display: inline-block;
+  color: #2DBE2D;
+  animation: blink 0.7s infinite;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 입력바 고정 */
+.chat-input-bar {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  width: 100vw;
+  box-sizing: border-box;
+  background: var(--bg-color);
+}
+
+/* 라이트 모드에서 채팅 입력창 상단 구분선 */
+body.light-mode .chat-input-bar {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.chat-input{
+  flex:1; width:100%;
+  min-height:38px; max-height:140px;
+  resize:none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius:12px;
+  padding:12px 16px;
+  background:rgba(255,255,255,0.05);
+  color:var(--text-color);
+}
+
+/* 라이트 모드에서 채팅 입력창 테두리 */
+body.light-mode .chat-input {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #2DBE2D;
+  box-shadow: 0 0 0 2px rgba(45, 190, 45, 0.2);
+}
+
+/* 다크 모드에서 포커스 상태 */
+body.dark-mode .chat-input:focus {
+  border-color: #33cc33;
+  box-shadow: 0 0 0 2px rgba(51, 204, 51, 0.3);
+}
+
+.login-page .form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #2a2a2a;
+  color: #fff;
+  margin-top: 5px;
+  transition: all 0.2s ease;
+}
+
+/* 라이트 모드에서 로그인 폼 입력 필드 */
+/* 라이트 모드에서 로그인 폼 입력 필드 */
+body.light-mode .login-page .form-group input {
+  border: 1px solid #e0e0e0 !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 라이트 모드 포커스 상태 */
+body.light-mode .login-page .form-group input:focus {
+  border-color: #2DBE2D !important;
+  box-shadow: 0 0 0 2px rgba(45, 190, 45, 0.2) !important;
+  outline: none !important;
+  background-color: #ffffff !important;
+  color: #333333 !important;
+}
+
+.send-button{
+  width:56px; height:48px;
+  border-radius:12px;
+  font-size:24px;
+  background:#2DBE2D;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  transition:background .2s;
+}
+
+.send-button:hover{
+  background:#25a825;
+}
+
+.send-button:active{
+  background:#1e9e1e;
+}
+
+/* ❹ 오류 토스트 (fade-in → 2s 후 fade-out) */
+.error-message{
+  position:absolute; left:50%; bottom:90px;
+  transform:translateX(-50%);
+  max-width:80%;
+  padding:10px 16px;                 /* 패딩 추가 */
+  background:rgba(244,67,54,0.1);    /* 배경색 추가 */
+  border-radius:8px;
+  color:#f44336;                     /* 빨간 글씨 */
+  font-size:15px; font-weight:600;
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+  z-index:100;                       /* 다른 요소 위에 표시 */
+}
+.error-message.visible{
+  opacity:1; animation:toastHide 2.8s forwards;
+}
+@keyframes toastHide{0%,80%{opacity:1;}100%{opacity:0;}}
+
+/* ❺ 스크롤바 색과 크기 조정 */
+.chat-messages::-webkit-scrollbar{
+  width: 8px;
+  position: absolute;
+  right: 0;
+  background-color: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb{
+  background: var(--primary-color);
+  border-radius: 6px;
+  border: none;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background-color: #3ac255;
+}
+.chat-messages::-webkit-scrollbar-track{
+  background: #151515;
+  margin: 0;
+  border: none;
+  border-radius: 4px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+html {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}

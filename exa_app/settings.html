@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Minecraft Mini Mate</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="src/navigation.js"></script>
+    
+</head>
+<body>
+  <div class="app-container">
+    <!-- ── 헤더바 ── -->
+    <div class="title-bar">
+      <div style="display:flex;align-items:center;gap:4px;-webkit-app-region:drag">
+        <button class="window-control-button" id="global-back">←</button>
+        <span class="title-label">Settings</span>
+      </div>
+      <div class="window-controls">
+        <button class="window-control-button minimize" onclick="window.electronAPI.windowControl('minimize')">﹣</button>
+        <button class="window-control-button close" onclick="window.electronAPI.windowControl('close')">✕</button>
+      </div>
+    </div>
+  
+  <div class="main-content flex-column-center">
+    <h2>Settings</h2>
+    
+    <div class="card settings-card">
+      
+      <div class="settings-section">
+        <div class="settings-title">Appearance</div>
+        
+        <div class="settings-item">
+          <div class="settings-label">Dark Theme</div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="theme-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="settings-item">
+          <div class="settings-label">Translucent Window</div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="window-style-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="divider"><span>Account</span></div>
+      
+      <div class="settings-section">
+        <button class="btn btn-secondary" id="auth-button">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('DOMContentLoaded event fired in settings.html');
+      
+      // Get elements
+      const themeToggle = document.getElementById('theme-toggle');
+      const windowStyleToggle = document.getElementById('window-style-toggle');
+      const authButton = document.getElementById('auth-button');
+      const backButton = document.getElementById('global-back');
+      
+      // 뒤로가기 버튼에 직접 이벤트 리스너 추가
+      if (backButton) {
+        console.log('Adding direct click handler to back button in settings.html');
+        backButton.addEventListener('click', (e) => {
+          console.log('Direct back button click in settings.html');
+          if (window.debugNavigation && window.debugNavigation.forceBack) {
+            window.debugNavigation.forceBack();
+          } else if (window.history.length > 1) {
+            window.history.back();
+          } else if (window.electronAPI) {
+            // 히스토리가 없으면 기본 페이지로 이동
+            window.electronAPI.checkAuth()
+              .then(isLoggedIn => {
+                if (isLoggedIn) {
+                  window.electronAPI.navigateTo('select-game.html');
+                } else {
+                  window.electronAPI.navigateTo('launch.html');
+                }
+              })
+              .catch(() => {
+                window.electronAPI.navigateTo('launch.html');
+              });
+          }
+        });
+      }
+      
+      // Apply theme from localStorage
+      function applyTheme() {
+        const theme = window.storageAPI.getItem('theme') || 'dark';
+        document.body.className = theme + '-mode';
+        if (themeToggle) {
+          themeToggle.checked = theme === 'dark';
+        }
+      }
+      
+      // Initialize settings
+      function initSettings() {
+        // Set window style toggle based on saved preference
+        const windowStyle = window.storageAPI.getItem('windowStyle') || 'normal';
+        if (windowStyleToggle) {
+          windowStyleToggle.checked = windowStyle === 'translucent';
+        }
+      }
+      
+      // Theme toggle change handler
+      if (themeToggle) {
+        themeToggle.addEventListener('change', () => {
+          const theme = themeToggle.checked ? 'dark' : 'light';
+          window.storageAPI.setItem('theme', theme);
+          if (window.electronAPI && window.electronAPI.setTheme) {
+            window.electronAPI.setTheme(theme);
+          }
+          document.body.className = theme + '-mode';
+        });
+      }
+      
+      // Window style toggle change handler
+      if (windowStyleToggle) {
+        windowStyleToggle.addEventListener('change', () => {
+          const style = windowStyleToggle.checked ? 'translucent' : 'normal';
+          window.storageAPI.setItem('windowStyle', style);
+          if (window.electronAPI && window.electronAPI.setWindowStyle) {
+            window.electronAPI.setWindowStyle(style);
+          }
+        });
+      }
+
+      // Update auth button based on login status
+      async function updateAuthButton() {
+        try {
+          if (!window.electronAPI || !window.electronAPI.checkAuth) {
+            console.error('electronAPI.checkAuth is not available');
+            return;
+          }
+          
+          const isLoggedIn = await window.electronAPI.checkAuth();
+          console.log('Auth status in updateAuthButton:', isLoggedIn);
+          
+          if (isLoggedIn) {
+            console.log('User is logged in, showing logout button');
+            authButton.textContent = 'Logout';
+            authButton.className = 'btn btn-secondary logout-button';
+          } else {
+            console.log('User is not logged in, showing login button');
+            authButton.textContent = 'Login';
+            authButton.className = 'btn btn-primary';
+          }
+        } catch (error) {
+          console.error('Error checking authentication status:', error);
+          authButton.textContent = 'Login';
+          authButton.className = 'btn btn-primary';
+        }
+      }
+
+      // Auth button click handler
+      if (authButton) {
+        authButton.addEventListener('click', async () => {
+          try {
+            if (!window.electronAPI) {
+              console.error('electronAPI is not available');
+              return;
+            }
+            
+            const isLoggedIn = await window.electronAPI.checkAuth();
+            console.log('Auth button clicked, isLoggedIn:', isLoggedIn);
+            
+            if (isLoggedIn) {
+              console.log('Logging out...');
+              // Logout
+              if (window.electronAPI.logout) {
+                window.electronAPI.logout();
+              }
+              // Update button immediately
+              authButton.textContent = 'Login';
+              authButton.className = 'btn btn-primary';
+            } else {
+              console.log('Navigating to login page...');
+              // Navigate to login page
+              if (window.electronAPI.navigateTo) {
+                await window.electronAPI.navigateTo('login.html');
+              } else {
+                window.location.href = 'login.html';
+              }
+            }
+          } catch (error) {
+            console.error('Error handling auth button click:', error);
+          }
+        });
+      }
+      
+      // Initialize
+      applyTheme();
+      initSettings();
+      updateAuthButton();
+      
+      console.log('Settings page initialization complete');
+    });
+  </script>
+</body>
+</html>
