@@ -73,4 +73,10 @@ logs/             # execution logs
 
 - 코드: MIT  
 - 텍스트(`mc_*.txt`): Minecraft Wiki (CC BY-SA 4.0) 인용
+
 ```
+
+## 📚 참고 자료
+
+* [프로젝트 발표 자료 (PDF)](./docs/MinecraftMiniMate.pdf)
+
